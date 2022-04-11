@@ -36,7 +36,6 @@
         position: absolute;
         top: 0;
         left: 0;
-        tab-size: 4;
         margin: 0;
         padding: 0;
         max-width: 100%;
@@ -72,15 +71,23 @@
       }
 
       .hljs-keyword {
-        color: #bb99ff;
+        color: #bb99ff !important;
       }
 
       .hljs-variable.language_ {
         color: #ffbb99;
       }
 
+      .hljs-variable.constant_ {
+        color: #00ddff;
+      }
+
       .hljs-title.function_ {
         color: #99ffbb;
+      }
+
+      .hljs-title.class_ {
+        color: #9999ff;
       }
 
       .hljs-string {
@@ -96,6 +103,13 @@
         </pre>
         <textarea id="codeBlockTextArea" spellcheck="false"></textarea>
       </div>
+      <div>
+        <button id="dummyButton">Add dummy code</button>
+        <div>
+          <label>Use Spaces</label>
+          <input id="useSpacesCheckBox" type="checkbox" />
+        </div>
+      </div>
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
@@ -103,12 +117,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/languages/javascript.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        const dummyCode = `var File = function(url, object){
+	File.list = Array.isArray(File.list)? File.list : [];
+	File.progress = File.progress || 0;
+	this.progress = 0;
+	this.object = object;
+	this.url = url;
+};
+`;
+        let useSpaces = true;
         const tabSize = 4;
         const codeBlock = document.querySelector("#codeBlock");
         const textArea = document.querySelector("#codeBlockTextArea");
+        const dummyButton = document.querySelector("#dummyButton");
+        const useSpacesCheckBox = document.querySelector("#useSpacesCheckBox");
         textArea.style.tabSize = tabSize;
+        codeBlock.style.tabSize = tabSize;
+        useSpacesCheckBox.checked = useSpaces;
         const highlightText = (value = "") => {
-          const highlighted = hljs.highlight('javascript', value)?.value?.replace(/\n/g, '<br>').replace(/\t/g, "&#9;");
+          const highlighted = hljs.highlight('javascript', value)?.value?.replace(/\t/g, "&#9;")?.replace(/\n/g, '<br>');
           codeBlock.innerHTML = highlighted;
           console.log(highlighted);
         }
@@ -119,8 +146,12 @@
             const caret = e.target?.selectionStart ?? null;
             if(caret !== null) {
               const value = e?.target?.value ?? "";
-              const newValue = value.slice(0, caret) + "\t" + value.slice(caret);
-              e.target.value = newValue;
+              // const newValue = value.slice(0, caret) + "\t" + value.slice(caret);
+              textArea.setRangeText(
+                useSpaces ? new Array(tabSize).fill(" ").join("") : '\t',
+                caret, caret, 'end');
+              highlightText(textArea.value);
+              // e.target.value = newValue;
             }
           }
         })
@@ -131,6 +162,16 @@
         textArea.addEventListener("change", (e) => {
           highlightText(e.target?.value);
         });
+
+        dummyButton.addEventListener("click", () => {
+          textArea.value = dummyCode;
+          highlightText(textArea.value);
+        })
+
+        useSpacesCheckBox.addEventListener("change", () => {
+          useSpaces = useSpacesCheckBox.checked;
+          console.log()
+        })
       })
     </script>
 </body>
