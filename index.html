@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      #codeBlockWrapper {
+        position: relative;
+        width: 600px;
+        height: 500px;
+        border: 1px solid #333;
+        background: #333;
+      }
+
+      * {
+        font-family: monospace;
+        font-size: 16px;
+        line-height: 16px;
+      }
+
+      #preCodeBlock {
+        position: absolute;
+        background: #bb99ff;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+      }
+
+      #codeBlock {
+        position: absolute;
+        top: 0;
+        left: 0;
+        tab-size: 4;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        height: 100%;
+        word-break: break-all;
+        color: #ddd;
+        user-select: none;
+      }
+
+      #codeBlockWrapper #codeBlockTextArea {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        resize: none;
+        padding: 0;
+        margin: 0;
+        outline: none;
+        border: none;
+        background: transparent;
+        color: transparent;
+        caret-color: #ddd;
+      }
+
+      #codeBlockWrapper #codeBlockTextArea::selection {
+        background-color: #ddd;
+        color: #333;
+      }
+
+      .hljs-number {
+        color: #aaffaa !important;
+      }
+
+      .hljs-keyword {
+        color: #bb99ff;
+      }
+
+      .hljs-variable.language_ {
+        color: #ffbb99;
+      }
+
+      .hljs-title.function_ {
+        color: #99ffbb;
+      }
+
+      .hljs-string {
+        color: #ffff99 !important;
+      }
+    </style>
+</head>
+<body>
+    <div id="app">
+      <h3>Code Editor Test with HLJS and TextArea approach</h3>
+      <div id="codeBlockWrapper">
+        <pre id="codeBlock">
+        </pre>
+        <textarea id="codeBlockTextArea" spellcheck="false"></textarea>
+      </div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/languages/javascript.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabSize = 4;
+        const codeBlock = document.querySelector("#codeBlock");
+        const textArea = document.querySelector("#codeBlockTextArea");
+        textArea.style.tabSize = tabSize;
+        const highlightText = (value = "") => {
+          const highlighted = hljs.highlight('javascript', value)?.value?.replace(/\n/g, '<br>').replace(/\t/g, "&#9;");
+          codeBlock.innerHTML = highlighted;
+          console.log(highlighted);
+        }
+
+        textArea.addEventListener("keydown", (e) => {
+          if(e.keyCode === 9) {
+            e.preventDefault();
+            const caret = e.target?.selectionStart ?? null;
+            if(caret !== null) {
+              const value = e?.target?.value ?? "";
+              const newValue = value.slice(0, caret) + "\t" + value.slice(caret);
+              e.target.value = newValue;
+            }
+          }
+        })
+
+        textArea.addEventListener("input", (e) => {
+          highlightText(e.target.value);
+        });
+        textArea.addEventListener("change", (e) => {
+          highlightText(e.target?.value);
+        });
+      })
+    </script>
+</body>
+</html>
