@@ -109,6 +109,10 @@
           <label>Use Spaces</label>
           <input id="useSpacesCheckBox" type="checkbox" />
         </div>
+        <div>
+          <label>Tab Size</label>
+          <input id="tabSizeInput" type="number" min="0" max="16" />
+        </div>
       </div>
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
@@ -126,13 +130,16 @@
 };
 `;
         let useSpaces = true;
-        const tabSize = 4;
+        let tabSize = 4;
         const codeBlock = document.querySelector("#codeBlock");
         const textArea = document.querySelector("#codeBlockTextArea");
         const dummyButton = document.querySelector("#dummyButton");
         const useSpacesCheckBox = document.querySelector("#useSpacesCheckBox");
+        const tabSizeInput = document.querySelector("#tabSizeInput");
+        tabSizeInput.value = tabSize;
         textArea.style.tabSize = tabSize;
         codeBlock.style.tabSize = tabSize;
+
         useSpacesCheckBox.checked = useSpaces;
         const highlightText = (value = "") => {
           const highlighted = hljs.highlight('javascript', value)?.value?.replace(/\t/g, "&#9;")?.replace(/\n/g, '<br>');
@@ -172,6 +179,13 @@
           useSpaces = useSpacesCheckBox.checked;
           console.log()
         })
+
+        tabSizeInput.addEventListener("input", (e) => {
+          tabSize = parseInt(e.target?.value); 
+          textArea.style.tabSize = tabSize;
+          codeBlock.style.tabSize = tabSize;
+        })
+
       })
     </script>
 </body>
